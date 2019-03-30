@@ -8,7 +8,7 @@
 2. Set Header
 3. Init Menu
 4. Init Input
-5. Init Google Map
+5. Init Isotope
 
 
 ******************************/
@@ -28,7 +28,6 @@ $(document).ready(function()
 	var menu = $('.menu');
 	var menuActive = false;
 	var burger = $('.hamburger');
-	var map;
 
 	setHeader();
 
@@ -49,7 +48,7 @@ $(document).ready(function()
 
 	initMenu();
 	initInput();
-	initGoogleMap();
+	initIsotope();
 
 	/* 
 
@@ -130,9 +129,9 @@ $(document).ready(function()
 
 	function initInput()
 	{
-		if($('.inpt').length)
+		if($('.newsletter_input').length)
 		{
-			var inpt = $('.inpt');
+			var inpt = $('.newsletter_input');
 			inpt.each(function()
 			{
 				var ele = $(this);
@@ -164,58 +163,50 @@ $(document).ready(function()
 		}
 	}
 
-	 /* 
+	/* 
 
-	5. Init Google Map
+	5. Init Isotope
 
 	*/
 
-	function initGoogleMap()
+	function initIsotope()
 	{
-		var myLatlng = new google.maps.LatLng(34.063685,-118.272936);
-    	var mapOptions = 
-    	{
-    		center: myLatlng,
-	       	zoom: 14,
-			mapTypeId: google.maps.MapTypeId.ROADMAP,
-			draggable: true,
-			scrollwheel: false,
-			zoomControl: true,
-			zoomControlOptions:
-			{
-				position: google.maps.ControlPosition.RIGHT_CENTER
-			},
-			mapTypeControl: false,
-			scaleControl: false,
-			streetViewControl: false,
-			rotateControl: false,
-			fullscreenControl: true,
-			styles:
-			[
-			  {
-			    "featureType": "road.highway",
-			    "elementType": "geometry.fill",
-			    "stylers": [
-			      {
-			        "color": "#ffeba1"
-			      }
-			    ]
-			  }
-			]
-    	}
-
-    	// Initialize a map with options
-    	map = new google.maps.Map(document.getElementById('map'), mapOptions);
-
-		// Re-center map after window resize
-		google.maps.event.addDomListener(window, 'resize', function()
+		var sortingButtons = $('.product_sorting_btn');
+		
+		if($('.item_grid').length)
 		{
-			setTimeout(function()
-			{
-				google.maps.event.trigger(map, "resize");
-				map.setCenter(myLatlng);
-			}, 1400);
-		});
+			var grid = $('.item_grid').isotope({
+				itemSelector: '.item',
+	            getSortData:
+	            {
+	            	price: function(itemElement)
+	            	{
+	            		var priceEle = $(itemElement).find('.destination_price').text().replace( 'From $', '' );
+	            		return parseFloat(priceEle);
+	            	},
+	            	name: '.destination_title a'
+	            },
+	            animationOptions:
+	            {
+	                duration: 750,
+	                easing: 'linear',
+	                queue: false
+	            }
+	        });
+
+	        // Sort based on the value from the sorting_type dropdown
+	        sortingButtons.each(function()
+	        {
+	        	$(this).on('click', function()
+	        	{
+	        		var parent = $(this).parent().parent().find('.sorting_text');
+		        		parent.text($(this).text());
+		        		var option = $(this).attr('data-isotope-option');
+		        		option = JSON.parse( option );
+	    				grid.isotope( option );
+	        	});
+	        });
+		}
 	}
 	
 });

@@ -7,8 +7,11 @@
 1. Vars and Inits
 2. Set Header
 3. Init Menu
-4. Init Input
-5. Init Google Map
+4. Init Home Slider
+5. Init Scrolling
+6. Init Isotope
+7. Init Testimonials Slider
+8. Init Input
 
 
 ******************************/
@@ -28,7 +31,6 @@ $(document).ready(function()
 	var menu = $('.menu');
 	var menuActive = false;
 	var burger = $('.hamburger');
-	var map;
 
 	setHeader();
 
@@ -48,8 +50,11 @@ $(document).ready(function()
 	});
 
 	initMenu();
+	initHomeSlider();
+	initIsotope();
+	initTestimonialsSlider();
+	initScrolling();
 	initInput();
-	initGoogleMap();
 
 	/* 
 
@@ -124,15 +129,118 @@ $(document).ready(function()
 
 	/* 
 
-	4. Init Input
+	4. Init Home Slider
+
+	*/
+
+	function initHomeSlider()
+	{
+		if($('.home_slider').length)
+		{
+			var homeSlider = $('.home_slider');
+			homeSlider.owlCarousel(
+			{
+				items:1,
+				autoplay:false,
+				loop:true,
+				nav:false,
+				dots:false,
+				smartSpeed:1200
+			});
+		}
+	}
+
+	/* 
+
+	5. Init Scrolling
+
+	*/
+
+	function initScrolling()
+	{
+		if($('.home_page_nav ul li a').length)
+		{
+			var links = $('.home_page_nav ul li a');
+	    	links.each(function()
+	    	{
+	    		var ele = $(this);
+	    		var target = ele.data('scroll-to');
+	    		ele.on('click', function(e)
+	    		{
+	    			e.preventDefault();
+	    			$(window).scrollTo(target, 1500, {offset: -90, easing: 'easeInOutQuart'});
+	    		});
+	    	});
+		}	
+	}
+
+	/* 
+
+	6. Init Isotope
+
+	*/
+
+	function initIsotope()
+	{
+		if($('.item_grid').length)
+		{
+			var grid = $('.item_grid').isotope({
+				itemSelector: '.item',
+	            getSortData:
+	            {
+	            	price: function(itemElement)
+	            	{
+	            		var priceEle = $(itemElement).find('.destination_price').text().replace( 'From $', '' );
+	            		return parseFloat(priceEle);
+	            	},
+	            	name: '.destination_title a'
+	            },
+	            animationOptions:
+	            {
+	                duration: 750,
+	                easing: 'linear',
+	                queue: false
+	            }
+	        });
+		}
+	}
+
+	/* 
+
+	7. Init Testimonials Slider
+
+	*/
+
+	function initTestimonialsSlider()
+	{
+		if($('.testimonials_slider').length)
+		{
+			var testSlider = $('.testimonials_slider');
+			testSlider.owlCarousel(
+			{
+				animateOut: 'fadeOut',
+    			animateIn: 'flipInX',
+				items:1,
+				autoplay:true,
+				loop:true,
+				smartSpeed:1200,
+				dots:false,
+				nav:false
+			});
+		}
+	}
+
+	/* 
+
+	8. Init Input
 
 	*/
 
 	function initInput()
 	{
-		if($('.inpt').length)
+		if($('.newsletter_input').length)
 		{
-			var inpt = $('.inpt');
+			var inpt = $('.newsletter_input');
 			inpt.each(function()
 			{
 				var ele = $(this);
@@ -163,59 +271,4 @@ $(document).ready(function()
 			});
 		}
 	}
-
-	 /* 
-
-	5. Init Google Map
-
-	*/
-
-	function initGoogleMap()
-	{
-		var myLatlng = new google.maps.LatLng(34.063685,-118.272936);
-    	var mapOptions = 
-    	{
-    		center: myLatlng,
-	       	zoom: 14,
-			mapTypeId: google.maps.MapTypeId.ROADMAP,
-			draggable: true,
-			scrollwheel: false,
-			zoomControl: true,
-			zoomControlOptions:
-			{
-				position: google.maps.ControlPosition.RIGHT_CENTER
-			},
-			mapTypeControl: false,
-			scaleControl: false,
-			streetViewControl: false,
-			rotateControl: false,
-			fullscreenControl: true,
-			styles:
-			[
-			  {
-			    "featureType": "road.highway",
-			    "elementType": "geometry.fill",
-			    "stylers": [
-			      {
-			        "color": "#ffeba1"
-			      }
-			    ]
-			  }
-			]
-    	}
-
-    	// Initialize a map with options
-    	map = new google.maps.Map(document.getElementById('map'), mapOptions);
-
-		// Re-center map after window resize
-		google.maps.event.addDomListener(window, 'resize', function()
-		{
-			setTimeout(function()
-			{
-				google.maps.event.trigger(map, "resize");
-				map.setCenter(myLatlng);
-			}, 1400);
-		});
-	}
-	
 });
